@@ -10,3 +10,5 @@ Spatial Alignment of Ensemble to Improve Ensemble Consensus Precipitation
 - Images of Spatialy Aligned Ensemble results
 - Verification results (Single cases and Accumulated results)
 - MODE verification results
+
+<img src="https://hunter3789.github.io/ensalign/image/href_ens_2022071500_f015_np_2pass.png">
