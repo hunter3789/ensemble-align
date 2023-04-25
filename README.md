@@ -1,7 +1,7 @@
 # ensalign
 
 Spatial Alignment of Ensemble to Improve Ensemble Consensus Precipitation
-- Devised by Dr.Keith Brewster of CAPS/University of Oklahoma
+- Original Author: Dr.Keith Brewster of CAPS/University of Oklahoma
 - Modified by ChangJae, Lee
 
 ## Demo 
