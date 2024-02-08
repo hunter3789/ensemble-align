@@ -1,0 +1,249 @@
+!     ##################################################################
+!     ##################################################################
+!     ######                                                      ######
+!     ######      INPUT FILE FOR ENSALIGN IN NAMELIST FORMAT      ######
+!     ######                                                      ######
+!     ######                     Developed by                     ######
+!     ######     Center for Analysis and Prediction of Storms     ######
+!     ######                University of Oklahoma                ######
+!     ######                                                      ######
+!     ##################################################################
+!     ##################################################################
+!
+!
+!#######################################################################
+!
+!  NAMELIST is not a standard FORTRAN 77 feature but is supported by
+!  almost all computer system vendors. 
+!
+!  The format for NAMELIST statement inside the program is:
+!
+!  NAMELIST /name/ variable_list
+!
+!    "name" is a NAMELIST name that is enclosed in slashes. It must not 
+!    be the same as a variable or array name, a named constant, or
+!    a procedure.
+!
+!    variable_list is list of variables or arrays separated by commas.
+!
+!  The format of NAMELIST data:
+!
+!  1. NAMELIST input data
+!     Input data must be in a special form to be read using a NAMELIST
+!     list. The first character in each record to be read must be blank.
+!     The second character in the first record of a group of data records
+!     must be an ampersand (&) immediately followed by NAMELIST name.
+!     This name is followed by (with a blank in between) data items
+!     separated by commas (a comma after the last item is optional).
+!     The end of a data group is signaled by /.
+!
+!     The form of the data items in an input record is:
+!
+!       var_name = constant (ends with a comma)
+!
+!         - The var_name can be an array element name or a variable name.
+!         - The constant can be integer, real, complex, logical or character.
+!         - Subscripts must be integer constants.
+!
+!       array_name = Set of Constant (separated by commas)
+!
+!         - The set of constants consists of the type integer, real,
+!           complex, logical ot character.
+!         - The number of constants must be less than or equal to the number
+!           of element in the array.
+!         - Successive occurrences of the same constant can be represented
+!           in the form c*constant, where c is a nonzero integer constant
+!           specifying the number of times the constant is to occur.
+!
+!  2. NAMELIST output data
+!     When output data is written using a NAMELIST list, it is written in a
+!     form that can be read using a NAMELIST list. All variable and array
+!     names specified in the NAMELIST list and their values are written out,
+!     each according to its type. Character data is included between
+!     apostrophes. The fields for the data are made large enough to contain
+!     all significant digits. The values of a complete array are written
+!     out in column-major order.
+!
+!
+!  Note that only lines between &NAMELIST_NAME and / are read as the
+!  input data, and there must be a blank space in front of the '&' sign.
+!
+!  Comments can be written between these data blocks. We are using 'c'
+!  in the first column of comment line only to distinguish them from the
+!  data statement.
+!
+!#######################################################################
+!
+! Author:
+!
+! Keith Brewster  (March, 2017)
+!
+! Modification history:
+!
+!#######################################################################
+
+!#######################################################################
+!
+!  Ensemble variables 
+!  realdata  1: CAPS Ensemble / 2: HREF / 3: GEFS
+!  ilcc      if 1, using lambert conformal conic projection
+!  acctime   length of time range   
+!
+!#######################################################################
+
+ &ens_data
+  realdata=1,
+  ilcc=1,
+  basedir='/archive-temp/2023_HMT_summer/',
+  varname='tp',
+  nmembers=15,
+  acctime=6,
+  min_nmem=5,
+  membname(01)='fv3lam-m0b0l0_p',
+  membname(02)='fv3lam-m0b0l0_pi',
+  membname(03)='fv3lam-m0b0l2_p',
+  membname(04)='fv3lam-m0b0l2_pi',
+  membname(05)='fv3lam-m0b1l0_pi',
+  membname(06)='fv3lam-m0b2l1_p',
+  membname(07)='fv3lam-m0b2l1_pi',
+  membname(08)='fv3lam-m0b2l2_pi',
+  membname(09)='fv3lam-m1b0l0_p',
+  membname(10)='fv3lam-m1b0l0_pi',
+  membname(11)='fv3lam-m1b0l2_pi',
+  membname(12)='fv3lam-m1b1l0_pi',
+  membname(13)='fv3lam-m1b2l1_pi',
+  membname(14)='fv3lam-m1b2l2_p',
+  membname(15)='fv3lam-m1b2l2_pi',
+ /
+
+!#######################################################################
+!
+!  Shift variables 
+!  nshfpass  Number of shift iterative passes.
+!  nbaksmth  Number smoothing passes to apply to background field.
+!  nshfsmth  Number of 9-pt smoothing passes to apply 
+!            to the shift vector field.
+!  noutsmth  Number of smoothing passes to apply to final output fields.
+!  minkdat   Minimum data points in a zone to affect shift determination.
+!  minptsratio Minimum data points relative to zero offset in a zone 
+!            be a valid shift determination.
+!  slnratio  Weighting ratio relative to zone size.
+!  iposdef   positive variables (e.g. precipitation)
+!
+!#######################################################################
+
+ &shift_const
+   alignopt = 2,
+   calcmean = 1,
+   iposdef = 1,
+   nshfpass = 2,
+   nbaksmth(1) = 1,
+   nbaksmth(2) = 0,
+   nshfsmth = 0,
+   noutsmth = 1,
+   minkdat = 3,
+   minkdratio = 0.8,
+   slnratio0h = 0.5,
+   slnratio48h = 1.0,
+   applyshft = 0,
+ /
+
+!
+!#######################################################################
+!
+! Shift Zones
+!
+! nizone: number of zones in x direction for each shift iteration
+! njzone: number of zones in y direction for each shift iteration
+!
+! loopstep: loop step (grid intervals) for calculating MSE of each zone
+! procspg:  number of processors per group assigned for calculating MSE
+!#######################################################################
+
+ &shift_zone
+  hrzlap = 0.5,
+  iborder(1)=0,  iborder(2)=0,
+  izsize(1)=200, izsize(2)=75,
+  jborder(1)=0,  jborder(2)=0,
+  jzsize(1)=200, jzsize(2)=75,
+  loopstep(1)=3, loopstep(2)=2,
+  procspg(1)=4,  procspg(2)=1,
+ /
+
+!
+!#######################################################################
+!
+!  weighting for each variable (in addition to normalization to account
+!  for standard error of observation).
+!  index   variable
+!    1     Precipitation
+!
+!  wgtvar      : weighting constant
+!  thresh_flag : if 1, it will do threshold checking
+!  threshvar   : threshold value
+!
+!#######################################################################
+ 
+ &shift_wgt 
+   wgtvar(1) = 1.0,
+   thresh_flag(1) = 1,
+   threshvar(1) = 0.25,
+ /
+
+!#######################################################################
+!
+!  Local Probability Matched Mean Options
+!
+!  patch_nx,patch_ny   Size of LPM local patch
+!  ovx,ovy             Outside border around LPM local patch
+!                      Calculation area:
+!                         (2*ovx)+patch_nx by (2*ovy)+patch_ny
+!  gauss_sigma         Gaussian smoother sigma in integer grid lengths
+!  filt_min            Filter minimum (real) default 0.1 mm
+!
+!#######################################################################
+
+&lpm_const
+ patch_nx=10,
+ patch_ny=10,
+ ovx=30,
+ ovy=30,
+ gauss_sigma=0,
+ filt_min=0.,
+/
+
+!#######################################################################
+!
+!  Output options
+!
+!  fsout_opt  option for generating the small size file
+!          =0, no
+!          =1, generate
+!#######################################################################
+
+&shift_out
+ shfoutdir = '/non/clee/ens/data2/',
+ fout_head = '/caps_ens_',
+ fsout_opt = 0,
+ shfsoutdir = '/non/clee/ens/data2/',
+ fsout_tail = '_transfer',
+/
+
+!
+!#######################################################################
+!
+!  Debug information printing level.
+!
+!  lvldbg    Level of debug information printing.
+!          =0, no printing;
+!          =1, Print variables in big t-step;
+!          =2, Print forcings in big t-step;
+!          =3, Print variables in small t-step;
+!          =4, Print forcings in small t-step;
+!          =5, Print individual forcing terms and misc. info.
+!
+!#######################################################################
+
+ &debug
+   lvldbg = 0,
+ /

@@ -1,0 +1,32 @@
+export NETCDFF_DIR="/home/clee/lib/netcdf-fortran"
+export ECCODES_DIR="/home/clee/lib/eccodes-2.27.0"
+
+mpif90 -O3 -fconvert=big-endian -c ../src/ensalign.f90 \
+  -DFCFLAGS=-w -fallow-argument-mismatch -O2 \
+  -Wl,-rpath,${NETCDFF_DIR}/lib \
+  -Wl,-rpath,${ECCODES_DIR}/lib \
+  -I../src/include \
+  -I${NETCDFF_DIR}/include \
+  -I${ECCODES_DIR}/include \
+  -L${NETCDFF_DIR}/lib \
+  -L${ECCODES_DIR}/lib \
+  -lnetcdff -lnetcdf -leccodes_f90 -leccodes
+mpif90 -O3 -fconvert=big-endian -c ../src/rshiftgrd.f90 -I../src/include
+mpif90 -O3 -fconvert=big-endian -c ../src/shftsub.f90 -I../src/include
+mpif90 -O3 -fconvert=big-endian -c ../src/intfield.f90 -I../src/include
+mpif90 -O3 -fconvert=big-endian -c ../src/mrgrnk.f90 -I../src/include
+mpif90 -O3 -fconvert=big-endian -c ../src/gs_smooth.f90 -I../src/include
+mpif90 -O3 -fconvert=big-endian -c ../src/LPM_mpi.f90 -I../src/include
+mpif90 -O3 -fconvert=big-endian -c ../src/sub_geth_newdate.f90
+mpif90 -O3 -fconvert=big-endian -c ../src/sub_util.f90
+mpif90 -O3 -fconvert=big-endian -o ensalign \
+   ensalign.o gs_smooth.o intfield.o rshiftgrd.o shftsub.o mrgrnk.o LPM_mpi.o sub_geth_newdate.o sub_util.o \
+  -Wl,-rpath,${NETCDFF_DIR}/lib \
+  -Wl,-rpath,${ECCODES_DIR}/lib \
+  -I../src/include \
+  -I${NETCDFF_DIR}/include \
+  -I${ECCODES_DIR}/include \
+  -L${NETCDFF_DIR}/lib \
+  -L${ECCODES_DIR}/lib \
+  -lnetcdff -lnetcdf -leccodes_f90 -leccodes
+
