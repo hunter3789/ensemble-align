@@ -218,10 +218,10 @@
 !#######################################################################
 
 &shift_out
- shfoutdir = '/non/clee/ens/test/',
+ shfoutdir = '/archive-temp/2024_HMT_winter/',
  fout_head = '/caps_ens_precipitation_',
  fsout_opt = 1,
- shfsoutdir = '/non/clee/ens/test/',
+ shfsoutdir = '/archive-temp/2024_HMT_winter/ForTransfer/',
  fsout_tail = '_transfer',
 /
 
