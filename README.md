@@ -1,16 +1,8 @@
-# 1. Environment setting
+# 1. Required packages/libraries  
 - MPI  
-conda install conda-forge::mpich  
 - Gfortran  
-conda install conda-forge::gfortran
-  
-- Do not install libraries below. (Version discrepancy) Use the paths of packages installed in Nimbus  
- #Set specific paths to install both packages below:    
- #- ecCodes (Version 2.27.0)  
- #https://confluence.ecmwf.int/display/ECC/Releases  
- #conda install -p path/to/myenv conda-forge::eccodes  
- #- NetCDF  
- #conda install -p path/to/myenv conda-forge::netcdf4  
+- ecCodes (Version 2.27.0), for GRIB I/O
+- NetCDF
 
 # 2. Build program  
 - Set the paths of ecCodes and NetCDF in 'buildit_mpi' (Already set)
@@ -20,4 +12,16 @@ conda install conda-forge::gfortran
 - Command line : ${path_of_program}/ensalign ${YYYYMMDDHH} ${fhr} ${input_file_path}
 - Command line (with MPI): mpirun -np ${number_of_processors} ${path_of_program}/ensalign ${YYYYMMDDHH} ${fhr} ${input_file_path}
 
-# 4. Verification
+# 4. Output file
+**4.1) command line to read the header of output file**  
+- ncdump -h ${filename}  
+
+**4.2) variables**  
+- ensfcst(nmembers, y, x) : Each member's original preicipitation field from ensemble system  
+- ensshffcst(nshfpass, nmembers, y, x) : Each member's aligned precipitation field    
+- shiftvec_u(nshfpass, nmembers, y, x), shiftvec_v(nshfpass, nmembers, y, x) : Each member's shift vector fields  
+- ensmean(y, x) : Ensemble mean of precipitation  
+- enspm(y, x) : Ensemble PM mean of precipitation  
+- enslpm(y, x) : Ensemble LPM mean of precipitation  
+- ensshfmean(nshfpass, y, x) : Spatially Aligned Mean (SAM) of precipitation  
+- ensshflpm(nshfpass, y, x) : Spatially Aligned Mean with LPM method applied (SAM-LPM) of precipitation  
