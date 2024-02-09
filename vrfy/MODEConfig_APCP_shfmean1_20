@@ -1,0 +1,39 @@
+quilt = TRUE;
+output_prefix  = "caps_ensshfmean1_20";
+mask_missing_flag = BOTH;
+
+mask = {
+   poly = "./mask_conus_b50km_stage4.nc";
+   poly_flag = BOTH;
+}
+
+fcst = {
+   field = {
+      name = "ensshfmean";
+   }
+   censor_thresh      = [];
+   censor_val         = [];
+   conv_radius        = 20.0/4.0; // in grid squares
+   conv_thresh        = >=20;
+   vld_thresh         = 0.5;
+   filter_attr_name   = [];
+   filter_attr_thresh = [];
+   merge_thresh       = >=15;
+   merge_flag         = THRESH;
+}
+
+obs = {
+   field = {
+      name = "APCP";
+      level = "A6";
+   }
+   censor_thresh      = [];
+   censor_val         = [];
+   conv_radius        = 20.0/4.0; // in grid squares
+   conv_thresh        = >=20;
+   vld_thresh         = 0.5;
+   filter_attr_name   = [];
+   filter_attr_thresh = [];
+   merge_thresh       = >=15;
+   merge_flag         = THRESH;
+}

@@ -1,0 +1,42 @@
+output_prefix  = "ensshflpm2";
+
+mask_missing_flag = BOTH;
+
+mask = {
+  poly = "./mask_conus_b50km_stage4.nc";
+  poly_flag = BOTH;
+}
+
+fcst = {
+  field = [
+    {
+      cat_thresh = [>=1, >=5, >=10, >=15, >=20, >=25];
+      name = "ensshflpm";
+      level = "A6";
+    }
+  ]; 
+}
+
+obs = {
+  field = [
+    {
+      cat_thresh = [>=1, >=5, >=10, >=15, >=20, >=25];
+      name = "APCP";
+      level = "A6";
+    }
+  ]; 
+}
+
+nbrhd = {
+  field = BOTH;
+  shape = CIRCLE;
+  cov_thresh = [>=0.5];
+  width = [5, 7, 9, 11];
+}
+
+output_flag = {
+  nbrcts = STAT;
+  cts = STAT;
+  nbrctc = STAT;
+  ctc = STAT;
+}

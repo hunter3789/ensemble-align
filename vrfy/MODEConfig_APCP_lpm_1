@@ -1,0 +1,39 @@
+quilt = TRUE;
+output_prefix  = "caps_enslpm_1";
+mask_missing_flag = BOTH;
+
+mask = {
+   poly = "./mask_conus_b50km_stage4.nc";
+   poly_flag = BOTH;
+}
+
+fcst = {
+   field = {
+      name = "enslpm";
+   }
+   censor_thresh      = [];
+   censor_val         = [];
+   conv_radius        = 20.0/4.0; // in grid squares
+   conv_thresh        = >=1;
+   vld_thresh         = 0.5;
+   filter_attr_name   = [];
+   filter_attr_thresh = [];
+   merge_thresh       = >=0.25;
+   merge_flag         = THRESH;
+}
+
+obs = {
+   field = {
+      name = "APCP";
+      level = "A6";
+   }
+   censor_thresh      = [];
+   censor_val         = [];
+   conv_radius        = 20.0/4.0; // in grid squares
+   conv_thresh        = >=1;
+   vld_thresh         = 0.5;
+   filter_attr_name   = [];
+   filter_attr_thresh = [];
+   merge_thresh       = >=0.25;
+   merge_flag         = THRESH;
+}
