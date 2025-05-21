@@ -118,7 +118,7 @@
   INTEGER :: i,j,k,k1,k2
   INTEGER :: ictr,jctr,realdata,missing
   INTEGER :: lvldbg,ipass,mxzone,applyshft
-  INTEGER :: itime,ifhr,ntstep,itstep,rtime
+  INTEGER :: itime,ifhr,ntstep,itstep,rtime,ifhrstep,accsum
   INTEGER :: narg,membknt,nelem2d,nelem3d
   INTEGER :: lstring,rsize,bufelems,mpibufsize
   INTEGER :: istat,istatus,inqstat,ierr,ireturn
@@ -140,7 +140,7 @@
   INTEGER             :: iret,ncid,ndim,count,nvarout
   INTEGER,ALLOCATABLE :: dimids(:),vardims(:),chunks(:),varids(:)
   INTEGER,ALLOCATABLE :: vardims2(:),chunks2(:),vardims3(:)
-  REAL,ALLOCATABLE    :: values(:),projx(:),projy(:)
+  REAL,ALLOCATABLE    :: values(:),values2(:),projx(:),projy(:)
 
   CHARACTER(LEN=4)    :: fhrstr
   CHARACTER(LEN=512)  :: fnamelist
@@ -268,16 +268,19 @@
 
           call codes_index_select(idx,'shortName',varname,istat)
           call codes_index_select(idx,'level',0,istat)
-          IF ( realdata == 1 ) THEN
-            call codes_index_select(idx,'lengthOfTimeRange',acctime,istat)
-          ELSE IF ( realdata == 2 ) THEN
-            call codes_index_select(idx,'lengthOfTimeRange',1,istat)
-          END IF
+          call codes_index_select(idx,'lengthOfTimeRange',1,istat)
 
           call codes_new_from_index(idx,igrib,istat)
+          if (istat .eq. 0) then
+            call codes_get(igrib,'Nx',nx,istat_nx)
+            call codes_get(igrib,'Ny',ny,istat_ny)
+          else
+            write(6,'(a,a,a,i3,a,i3,a)') 'Error: a variable with shortname ', trim(varname), ', &
+                lengthOfTimeRange ', 1, ', level ', 0, ' does not exist'
 
-          call codes_get(igrib,'Nx',nx,istat_nx)
-          call codes_get(igrib,'Ny',ny,istat_ny)
+            istat_nx = -1
+            istat_ny = -1
+          endif
 
           if (istat_nx .eq. 0 .and. istat_ny .eq. 0) then
             allocate(values(nx*ny), lats(nx,ny), lons(nx,ny))
@@ -589,11 +592,89 @@
           call codes_index_select(idx,'lengthOfTimeRange',acctime,istat)
 
           call codes_new_from_index(idx,igrib,istat)
+          if (istat .ne. 0) then
+            write(6,'(a,a,a,i3,a,i3,a)') 'Error: a variable with shortname ', trim(varname), ', &
+                lengthOfTimeRange ', acctime, ', level ', 0, ' does not exist'
 
-          allocate(values(nx*ny))
-          call codes_get(igrib,'values',values,istat)
+            accsum = 0
+            DO ifhrstep=0,acctime-1
+              if (ifhrstep .gt. 0) then
+                call codes_release(igrib,istat)
+                call codes_close_file(ifile,istat)
 
-          if (istat .eq. 0) then
+                WRITE(finname,'(a,i4.4,3(i2.2),a,a,a,i4.4,3(i2.2),a,i3.3,a)') trim(basedir), &
+                  odate(1), odate(2), odate(3), odate(4), '/', trim(membname(k)), '_', &
+                  odate(1), odate(2), odate(3), odate(4), 'f', ifhr-ifhrstep, '.grib2'
+                WRITE(6,'(2a)') ' read file: ', trim(finname)
+
+                call codes_open_file(ifile,finname,'r',istat)
+                if (istat .eq. 0) then
+                  call codes_index_create(idx,finname,'shortName,level,lengthOfTimeRange',istat)
+                else
+                  cycle
+                endif
+              endif
+
+              call codes_index_select(idx,'shortName',varname,istat)
+              call codes_index_select(idx,'level',0,istat)
+              call codes_index_select(idx,'lengthOfTimeRange',1,istat)
+
+              call codes_new_from_index(idx,igrib,istat)
+              if (istat .ne. 0) then
+                write(6,'(a,a,a,i3,a,i3,a)') 'Error: a variable with shortname ', trim(varname), ', &
+                    lengthOfTimeRange ', 1, ', level ', 0, ' does not exist'
+              else
+                accsum = accsum + 1
+
+                allocate(values2(nx*ny))
+                call codes_get(igrib,'values',values2,istat)
+                call codes_get(igrib,'missingValue',missing,istat)
+
+                if (allocated(values)) then
+                  do i=1,nx
+                    do j=1,ny
+                      if (values2((j-1)*nx+i).eq.missing) then
+                        values((j-1)*nx+i) = 0.
+                      else
+                        values((j-1)*nx+i) = values((j-1)*nx+i) + values2((j-1)*nx+i)
+                      end if
+                    enddo
+                  enddo
+                else
+                  allocate(values(nx*ny))
+
+                  do i=1,nx
+                    do j=1,ny
+                      if (values2((j-1)*nx+i).eq.missing) then
+                        values((j-1)*nx+i) = 0.
+                      else
+                        values((j-1)*nx+i) = values2((j-1)*nx+i)
+                      end if
+                    enddo
+                  enddo
+                end if
+
+                if (allocated(values2)) then
+                  deallocate(values2)
+                end if
+              endif
+            ENDDO
+
+            if (accsum .eq. acctime) then
+              membknt = membknt + 1
+
+              do i=1,nx
+                do j=1,ny
+                  ensfcst(i,j,membknt) = values((j-1)*nx+i)
+                enddo
+              enddo
+
+              ensfname(membknt) = membname(k)
+            endif
+          else
+            allocate(values(nx*ny))
+            call codes_get(igrib,'values',values,istat)
+
             membknt = membknt + 1
             call codes_get(igrib,'missingValue',missing,istat)
 
