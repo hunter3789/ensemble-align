@@ -1,3 +1,5 @@
+https://doi.org/10.1175/WAF-D-23-0229.1
+
 # 1. Required packages/libraries  
 - MPI  
 - Gfortran  
