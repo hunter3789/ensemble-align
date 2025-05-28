@@ -3,6 +3,7 @@ This repository presents a post-processing technique for generating ensemble con
 📄 Read the paper: https://doi.org/10.1175/WAF-D-23-0229.1
 
 # 2023 FFaIR Summer Experiment results
+🌦️ You can explore the 2023 FFaIR Summer Experiment results here.  
 https://caps.ou.edu/clee/ens/ens_view.php
 
 # 1. Required packages/libraries  
