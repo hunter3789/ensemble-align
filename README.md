@@ -1,6 +1,6 @@
 # Description
-
-https://doi.org/10.1175/WAF-D-23-0229.1
+This repository presents a post-processing technique for generating ensemble consensus precipitation forecasts, accounting for spatial and intensity differences among individual members.  
+📄 Read the paper: https://doi.org/10.1175/WAF-D-23-0229.1
 
 # 2023 FFaIR Summer Experiment results
 https://caps.ou.edu/clee/ens/ens_view.php
