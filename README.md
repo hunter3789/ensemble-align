@@ -1,6 +1,7 @@
 # Description
 This repository presents a post-processing technique for generating ensemble consensus precipitation forecasts, accounting for spatial and intensity differences among individual members.  
 📄 Read the paper: https://doi.org/10.1175/WAF-D-23-0229.1
+💻 Data is available at https://osf.io/6bame/  
 
 # 2023 FFaIR Summer Experiment results
 🌦️ You can explore the 2023 FFaIR Summer Experiment results here.  
